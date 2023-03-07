@@ -11,4 +11,8 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j
 <servlet-name>FrontServlet</servlet-name> 
 <url-pattern>/</url-pattern> 
 </servlet-mapping> 
+<servlet> 
+<servlet-name>Mapping</servlet-name> 
+<servlet-class>etu1814.framework.Mapping</servlet-class> 
+</servlet>
 </web-app>
