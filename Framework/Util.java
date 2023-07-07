@@ -3,8 +3,12 @@ package etu1814.framework.Util;
 import java.beans.PropertyEditorManager;
 import java.beans.PropertyEditorSupport;
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -15,6 +19,24 @@ public class Util {
     // public static Vector<String> getAllArgument(HttpServletRequest req,){
         
     // }
+
+    public static byte[] convertFileToBytes(String filePath) throws IOException {
+        Path path = Paths.get(filePath);
+        return Files.readAllBytes(path);
+    }
+
+    public static String getSubmittedFileName(Part part) {
+        String header = part.getHeader("content-disposition");
+        if (header == null)
+            return null;
+
+        for (String headerPart : header.split(";")) {
+            if (headerPart.trim().startsWith("filename")) {
+                return headerPart.substring(headerPart.indexOf('=') + 1).trim().replace("\"", "");
+            }
+        }
+        return null;
+    }
 
     public static String getUrlString(String url){
         String[] all = url.split("/");
