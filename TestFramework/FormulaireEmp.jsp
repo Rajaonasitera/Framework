@@ -1,6 +1,3 @@
-<%
-String[] nom=(String[])request.getAttribute("all");
-%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,9 +7,10 @@ String[] nom=(String[])request.getAttribute("all");
     <title>Document</title>
 </head>
 <body>
-    <h1>Coucouu </h1>
-    <%for(int i = 0 ; i<nom.length ; i++){%>
-        <p><%out.print(nom[i]);%></p>
-    <%}%>
+    <form action="saveEmp" method="post">
+        <p><input type="text" name="nom" id=""></p>
+        <p><input type="number" name="numero" id=""></p>
+        <input type="submit" value="OK">
+    </form>
 </body>
 </html>

@@ -1,5 +1,7 @@
 package etu1814.framework.Util;
 
+import java.beans.PropertyEditorManager;
+import java.beans.PropertyEditorSupport;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -7,6 +9,12 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 public class Util {
+
+    public static <T> T conversion(String value, Class<T> type){
+        PropertyEditorSupport editor = (PropertyEditorSupport) PropertyEditorManager.findEditor(type);
+        editor.setAsText(value);
+        return (T) editor.getValue();
+    }
 
     public static ArrayList<String>getAllCLassName(File f,ArrayList<String> tab,String pack){
         File[] files = f.listFiles();
