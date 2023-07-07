@@ -8,7 +8,8 @@ import java.util.Map;
 
 import javax.servlet.*; 
 import javax.servlet.http.*;
-import etu1814.framework.*; 
+import etu1814.framework.*;
+import etu1814.framework.Util.ModelView; 
 
 public class FrontServlet extends HttpServlet { 
     HashMap<String,Mapping> MappingUrls=new HashMap<>();
@@ -46,12 +47,31 @@ public class FrontServlet extends HttpServlet {
         processRequest(req, res);
     } 
     public void processRequest(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        PrintWriter out=res.getWriter();
-        String url=req.getServletPath();
-        out.println(url);
-        for (Map.Entry<String,Mapping> i : MappingUrls.entrySet()) {
-            out.println(i.getKey());
-            out.println(i.getValue());
+        try {
+            PrintWriter out=res.getWriter();
+            String url=req.getServletPath();
+            ModelView mv=new ModelView();
+            out.println(url);
+            if (MappingUrls.containsKey(url)) {
+                Mapping ma=MappingUrls.get(url);
+                Class cl = Class.forName(ma.getClassName());
+                Object obj = cl.getConstructor().newInstance();
+                Method[] met = cl.getDeclaredMethods();
+                for (int i = 0; i < met.length; i++) {
+                    if (met[i].getName().equals(ma.getMethod())) {
+                        mv = (ModelView)met[i].invoke(obj);
+                    }
+                }
+            }
+            // for (Map.Entry<String,Mapping> i : MappingUrls.entrySet()) {
+            //     out.println(i.getKey());
+            //     out.println(i.getValue());
+            // }
+            RequestDispatcher dispatch = req.getRequestDispatcher(mv.getView());
+            dispatch.forward(req,res);
+        } catch (Exception e) {
+            // TODO: handle exception
         }
+
     } 
 }
