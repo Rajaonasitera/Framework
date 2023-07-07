@@ -10,6 +10,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import etu1814.framework.*;
 import etu1814.framework.Util.ModelView; 
+import java.util.Map.Entry;
 
 public class FrontServlet extends HttpServlet { 
     HashMap<String,Mapping> MappingUrls=new HashMap<>();
@@ -62,6 +63,10 @@ public class FrontServlet extends HttpServlet {
                         mv = (ModelView)met[i].invoke(obj);
                     }
                 }
+            }
+            HashMap<String,Object> mp= mv.getData();
+            for ( Entry e : mp.entrySet()) {
+                req.setAttribute((String)e.getKey(),e.getValue());
             }
             // for (Map.Entry<String,Mapping> i : MappingUrls.entrySet()) {
             //     out.println(i.getKey());
