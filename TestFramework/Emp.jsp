@@ -1,6 +1,6 @@
-<%
-String[] nom=(String[])request.getAttribute("all");
-%>
+<%@page language="java" contentType="text/html"%>
+<%@ page import="model.*"%>
+<% Emp p = (Emp)request.getAttribute("emp"); %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,9 +10,7 @@ String[] nom=(String[])request.getAttribute("all");
     <title>Document</title>
 </head>
 <body>
-    <h1>Coucouu </h1>
-    <%for(int i = 0 ; i<nom.length ; i++){%>
-        <p><%out.print(nom[i]);%></p>
-    <%}%>
+        <p><%out.print(p.getNom());%></p>
+        <p><%out.print(p.getNumero());%></p>
 </body>
 </html>

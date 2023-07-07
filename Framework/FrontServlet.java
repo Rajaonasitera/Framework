@@ -1,5 +1,6 @@
 package etu1814.framework.servlet;
 import java.io.*;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.ArrayList;
@@ -9,7 +10,9 @@ import java.util.Map;
 import javax.servlet.*; 
 import javax.servlet.http.*;
 import etu1814.framework.*;
-import etu1814.framework.Util.ModelView; 
+import etu1814.framework.Util.ModelView;
+import etu1814.framework.Util.Util;
+
 import java.util.Map.Entry;
 
 public class FrontServlet extends HttpServlet { 
@@ -57,6 +60,15 @@ public class FrontServlet extends HttpServlet {
                 Mapping ma=MappingUrls.get(url);
                 Class cl = Class.forName(ma.getClassName());
                 Object obj = cl.getConstructor().newInstance();
+                Field[] attribut = cl.getDeclaredFields();
+                for (int i = 0; i < attribut.length; i++) {
+                    if (req.getParameter(attribut[i].getName())!=null) {
+                        Field f = cl.getDeclaredField(attribut[i].getName());
+                        f.setAccessible(true);
+                        String value = req.getParameter(attribut[i].getName());
+                        f.set(obj, Util.conversion(value,f.getType()));
+                    }
+                }
                 Method[] met = cl.getDeclaredMethods();
                 for (int i = 0; i < met.length; i++) {
                     if (met[i].getName().equals(ma.getMethod())) {
