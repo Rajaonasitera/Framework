@@ -4,8 +4,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.net.URI;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -14,6 +16,7 @@ import javax.servlet.http.*;
 import etu1814.framework.*;
 import etu1814.framework.Util.ModelView;
 import etu1814.framework.Util.Util;
+// import org.apache.commons.fileupload.*;
 
 import java.util.Map.Entry;
 
@@ -57,9 +60,6 @@ public class FrontServlet extends HttpServlet {
             PrintWriter out=res.getWriter();
             String url=req.getServletPath();
             ModelView mv=new ModelView();
-            out.println(url);
-            // String url = Util.getUrlString(urlP);
-            // out.println(url);
 
             if (MappingUrls.containsKey(url)) {
                 Mapping ma=MappingUrls.get(url);
@@ -75,43 +75,61 @@ public class FrontServlet extends HttpServlet {
                         f.set(obj, Util.conversion(value,f.getType()));
                     }
                 }
+                String contenttype = req.getContentType();
+                if(contenttype != null && contenttype.toLowerCase().startsWith("multipart/form-data")) {
+                    System.out.println("mandalo sprint 9");
+
+                    FileUpload file = new FileUpload();
+                    for(Part part : req.getParts()) {
+                        try {
+                            file.setName(Paths.get(part.getSubmittedFileName()).getFileName().toString());
+                            InputStream in = part.getInputStream();
+                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                            byte[] buffer = new byte[4096];
+                            int byteread;
+                            while((byteread = in.read()) != -1) {
+                                baos.write(buffer, 0, byteread);
+                            }
+                            file.setBytearray(baos.toByteArray());
+                            out.println("taile byte :"+file.getBytearray().length);
+                            mv = new ModelView();
+                            HashMap<String,Object> mas = new HashMap<String,Object>();
+                            mas.put("taillefichier", file.getBytearray().length);
+                            mas.put("nomfichier", file.getName());
+
+                            mv.setData(mas);
+                            mv.setView("index.jsp");
+                            } catch (Exception e) {
+                                out.println(e.getMessage()+"cause"+e.getCause());
+                            }
+                        }
+                }
+            }
 
                 Method[] met = cl.getDeclaredMethods();
-                out.println(met.length);
+                
                 for (int i = 0; i < met.length; i++) {
-                    out.println("1");
                     if (met[i].getName().equals(ma.getMethod())) {
-                        out.println("1");
-                        out.println(met[i].getName());
-
-                        // Method method = cl.getMethod(met[i].getName(), (Class<?>[]) null);
-                        // out.print(method.getName());
-
                         Parameter[] parameters = met[i].getParameters();
-                        out.println(parameters.length);
+
                         if (parameters.length!=0) {
-                            out.println("2");
                             Object[] arg = new Object[parameters.length];
                             Vector<String> allarg = new Vector<>();
                             String[] argname = (((etu1814.framework.Util.Url)met[i].getAnnotations()[0]).parameters()).split("/");
-                            for (int j = 0; j < parameters.length; j++) {
-                                // Class<?> parmtype = parameters[i].getType();
-                                out.println(parameters[j].getType());
-                                // out.println(allarg.get(j));
-                                arg[j] = Util.conversion(req.getParameter(argname[j]), parameters[j].getType());
-                                out.println(parameters[j].getName());
-                                out.println(arg[j]);
-                                out.println(req.getParameter(parameters[j].getName()));
-                            }
-                            mv = (ModelView)met[i].invoke(obj, arg);
+
+                                for (int j = 0; j < parameters.length; j++) {
+                                    arg[j] = Util.conversion(req.getParameter(argname[j]), parameters[j].getType());
+                                }
+                                mv = (ModelView)met[i].invoke(obj, arg);
                         }else{
-                            out.println("3");
+
                             mv = (ModelView)met[i].invoke(obj);
+
                         }  
                     }
                 }
-            }
-            out.println(mv.getView());
+            
+
             HashMap<String,Object> mp= mv.getData();
             for ( Entry e : mp.entrySet()) {
                 req.setAttribute((String)e.getKey(),e.getValue());

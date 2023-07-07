@@ -1,6 +1,12 @@
 package model;
 
 import etu1814.framework.Util.Url;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import etu1814.framework.FileUpload;
 import etu1814.framework.Util.ModelView;
 
 /**
@@ -47,6 +53,22 @@ public class Emp {
         mv.addItem("numero", numero);
         return mv;
 
+    }
+
+    @Url(url = "/upload", parameters = "file")
+    public ModelView uploadCv(FileUpload file){
+        String filePath = file.getPath();
+        String fileName = file.getName();
+        byte[] fileData = file.getBytearray();
+        try (FileOutputStream fos = new FileOutputStream(filePath + File.separator + fileName)) {
+            fos.write(fileData);
+            System.out.println("Le fichier a été sauvegardé avec succès !");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ModelView mv = new ModelView();
+        mv.setView("File.jsp");
+        return mv;
     }
 
     public void huhu(){
