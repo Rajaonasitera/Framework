@@ -6,14 +6,39 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Vector;
+import javax.servlet.http.*;
 
 public class Util {
+
+    // public static Vector<String> getAllArgument(HttpServletRequest req,){
+        
+    // }
+
+    public static String getUrlString(String url){
+        String[] all = url.split("/");
+        return "/"+all[1];
+    }
 
     public static <T> T conversion(String value, Class<T> type){
         PropertyEditorSupport editor = (PropertyEditorSupport) PropertyEditorManager.findEditor(type);
         editor.setAsText(value);
         return (T) editor.getValue();
+    }
+
+    public static String[] getParameters(Enumeration<String> values, HttpServletRequest req){
+        ArrayList<String> list = new ArrayList<>();
+        while (values.hasMoreElements()) {
+            list.add(values.nextElement());
+        }
+        String[] paramName = new String[list.size()];
+        paramName = list.toArray(paramName);
+        String[] rep = new String[list.size()];
+        for (int i = 0; i < rep.length; i++) {
+            rep[i] = req.getParameter(paramName[i]);
+        }
+        return rep;
     }
 
     public static ArrayList<String>getAllCLassName(File f,ArrayList<String> tab,String pack){

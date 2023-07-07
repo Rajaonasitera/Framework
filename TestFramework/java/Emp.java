@@ -39,6 +39,16 @@ public class Emp {
         return mv;
     }
 
+    @Url(url = "/insert", parameters = "nom/numero" )
+    public ModelView insert(String nom,int numero){
+        ModelView mv = new ModelView();
+        mv.setView("InsertEmp.jsp");
+        mv.addItem("nom", nom);
+        mv.addItem("numero", numero);
+        return mv;
+
+    }
+
     public void huhu(){
 
     }
